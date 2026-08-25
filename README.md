@@ -16,6 +16,8 @@ Then visit [http://localhost:5173](http://localhost:5173). A local server is req
 
 Railway or Render can run this Node server using the existing `npm start` command. Set no fixed port: the app reads the platform-provided `PORT` variable automatically. Enable a persistent disk if you want the temporary local account-file storage to survive service restarts.
 
+The repository includes `railway.toml` and `render.yaml`, so either host detects the start command automatically after importing the GitHub repository.
+
 For a real public release, replace `.gatherly-users.json` and in-memory journeys with Supabase/Postgres before inviting users. A public deployment also needs HTTPS for live location on phones.
 
 ## What works
