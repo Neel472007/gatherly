@@ -2,6 +2,7 @@ services:
   - type: web
     name: gatherly
     runtime: node
+    plan: free
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /
