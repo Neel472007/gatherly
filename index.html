@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#081712" />
+    <title>Gatherly — Meet on time</title>
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section id="welcome" class="welcome-panel">
+        <div class="brand"><span class="brand-mark">g</span> Gatherly <button id="auth-trigger" class="auth-trigger" type="button">Sign in</button></div>
+        <div class="hero-copy">
+          <p class="eyebrow">MEET UP, WITHOUT THE “WHERE ARE YOU?”</p>
+          <h1>Everyone gets<br /><em>there</em> together.</h1>
+          <p class="lede">A private, temporary live map for your next plan.</p>
+        </div>
+        <form id="start-form" class="card form-card">
+          <label>YOUR NAME <input id="name-input" required maxlength="24" placeholder="e.g. Neel" autocomplete="name" /></label>
+          <label>MEETUP NAME <input id="meetup-input" required maxlength="42" placeholder="e.g. Sunday brunch" /></label>
+          <button class="primary" type="submit">Create a meetup <span>→</span></button>
+          <p class="form-note">Already have a code? <button id="join-trigger" class="link-button" type="button">Join a meetup</button></p>
+        </form>
+        <p class="privacy-note">Your location is shared only while this meetup is active. <button id="privacy-trigger" class="link-button" type="button">How privacy works</button></p>
+      </section>
+
+      <section id="map-screen" class="map-screen hidden">
+        <header class="topbar">
+          <div class="brand"><span class="brand-mark">g</span> Gatherly</div>
+          <div class="meeting-title"><strong id="meeting-name">Sunday brunch</strong><span><i></i> <span id="role-label">Group leader</span> · Live until <span id="expires-time"></span></span></div>
+          <button id="share-button" class="share-button">Share my link <span>↗</span></button>
+          <span id="account-name" class="account-name"></span><button id="logout-button" class="secondary logout-button">Log out</button>
+        </header>
+        <div id="map" aria-label="Meetup map"></div>
+        <aside class="map-controls">
+          <button id="locate-button" class="round-button" title="Use my location">◎</button>
+          <button id="demo-button" class="round-button" title="Move demo friends">✦</button>
+        </aside>
+        <section class="map-banner" id="location-banner"><span class="pulse"></span><span id="location-status">Location sharing is off</span><button id="enable-location">Share live location</button></section>
+
+        <section class="meetup-sheet">
+          <div class="sheet-handle"></div>
+          <div class="sheet-heading">
+            <div>
+              <p class="eyebrow">DESTINATION</p>
+              <h2 id="destination-name">Cafe Lune</h2>
+              <p id="destination-address">18 Park Street, Kolkata</p>
+            </div>
+            <button id="destination-button" class="secondary">Change</button>
+          </div>
+          <div class="from-row"><span>FROM: <strong id="from-status">Location not selected</strong></span><button id="from-location" class="text-action">Set start</button></div>
+          <div class="arrival-card"><span class="arrival-icon">⌖</span><span><strong id="group-arrival">Everyone arrives by 7:18 PM</strong><small id="arrival-detail">Based on current locations</small></span></div>
+          <div class="people-heading"><h3>Group members <span id="people-count">1</span></h3><button id="add-friend" class="text-action">+ Invite member</button></div>
+          <div id="people-list" class="people-list"></div>
+          <div class="sheet-actions"><button id="manual-location" class="secondary">Set my location on map</button><button id="stop-sharing" class="text-action">Stop sharing</button></div>
+          <button id="end-meetup" class="end-button">Leave meetup & stop sharing</button>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="join-dialog"><form method="dialog" class="modal"><button class="close" value="cancel">×</button><p class="eyebrow">JOIN A MEETUP</p><h2>Enter your invite code</h2><label>YOUR NAME <input id="join-name" maxlength="24" placeholder="Your name" /></label><label>INVITE CODE <input id="join-code" maxlength="6" placeholder="ABC123" /></label><button id="join-button" value="default" class="primary">Join meetup →</button></form></dialog>
+    <dialog id="destination-dialog"><form method="dialog" class="modal"><button class="close" value="cancel">×</button><p class="eyebrow">DESTINATION</p><h2>Where are you meeting?</h2><label>SEARCH FOR A PLACE <input id="destination-input" maxlength="80" placeholder="Search cafe, address, or landmark" /></label><div id="search-results" class="search-results"></div><label>PLACE NAME <input id="place-name-input" maxlength="42" placeholder="e.g. Park Street Cafe" /></label><label>ADDRESS <input id="address-input" maxlength="80" placeholder="e.g. 18 Park Street, Kolkata" /></label><p class="hint">Search a place, or click directly on the map to set the precise destination.</p><button id="save-destination" value="default" class="primary">Update destination →</button></form></dialog>
+    <dialog id="share-dialog"><div class="modal"><button id="share-close" class="close">×</button><p class="eyebrow">INVITE FRIENDS</p><h2>Give each member their own link</h2><p class="modal-copy">Members join with this link, choose whether to share location, and see every other member who has opted in.</p><div class="code-box"><span id="invite-code">GTHRLY</span><button id="copy-code">Copy link</button></div><button id="native-share" class="primary">Share member link →</button></div></dialog>
+    <dialog id="privacy-dialog"><div class="modal"><button id="privacy-close" class="close">×</button><p class="eyebrow">YOUR PRIVACY</p><h2>You are in control.</h2><p class="modal-copy">Gatherly sends your location to this journey only when you choose to enable sharing. Every member can stop sharing or leave at any time; when they do, their location is clearly marked as hidden.</p></div></dialog>
+    <dialog id="auth-dialog"><form method="dialog" class="modal"><button class="close" value="cancel">×</button><p class="eyebrow">YOUR GATHERLY ACCOUNT</p><h2 id="auth-title">Sign in</h2><label>DISPLAY NAME <input id="auth-name" maxlength="24" placeholder="Your name" autocomplete="name" /></label><label>EMAIL <input id="auth-email" type="email" placeholder="you@example.com" autocomplete="email" /></label><label>PASSWORD <input id="auth-password" type="password" minlength="6" placeholder="At least 6 characters" autocomplete="current-password" /></label><button id="auth-submit" value="default" class="primary">Sign in →</button><p class="form-note"><button id="auth-switch" class="link-button" type="button">Create an account instead</button></p></form></dialog>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="app.js"></script>
+  </body>
+</html>
